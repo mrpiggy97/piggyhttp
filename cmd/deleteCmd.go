@@ -9,14 +9,19 @@ import (
 )
 
 func deleteRequest(cmd *cobra.Command, args []string) {
+
+	//set request
 	var client *http.Client = &http.Client{}
 	request, requestError := http.NewRequest("DELETE", *url, nil)
 	if requestError != nil {
 		log.Error().Msg(requestError.Error())
+		panic(requestError.Error())
 	}
 	if len(*authorizationToken) > 0 {
 		request.Header.Add("Authorization", *authorizationToken)
 	}
+
+	//make request
 	response, responseError := client.Do(request)
 	if responseError != nil {
 		log.Error().Msg(responseError.Error())

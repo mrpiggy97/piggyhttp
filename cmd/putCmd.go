@@ -13,20 +13,26 @@ import (
 var putData *string = new(string)
 
 func putRequest(cmd *cobra.Command, args []string) {
+	//set data to send
 	var data map[string]string = map[string]string{
 		"data": *putData,
 	}
 
 	jsonData, _ := json.Marshal(data)
 	var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
+
+	//set request
 	request, requestError := http.NewRequest("PUT", *url, buffer)
 	var client *http.Client = &http.Client{}
 	if requestError != nil {
-		log.Error().Msg(requestError.Error())
+		log.Err(requestError).Msg(requestError.Error())
+		panic(requestError.Error())
 	}
 	if len(*authorizationToken) > 0 {
 		request.Header.Add("Authorization", *authorizationToken)
 	}
+
+	//make request
 	response, responseError := client.Do(request)
 	if responseError != nil {
 		log.Error().Msg(responseError.Error())
