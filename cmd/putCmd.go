@@ -50,3 +50,8 @@ var putCmd *cobra.Command = &cobra.Command{
 	Example: "piggyhttp put --url <target url> --data <data to send>",
 	Run:     putRequest,
 }
+
+func init() {
+	putCmd.Flags().StringVar(putData, "data", "", "sets data to send")
+	putCmd.MarkFlagRequired("data")
+}

@@ -50,3 +50,8 @@ var postCmd *cobra.Command = &cobra.Command{
 	Example: "piggyhttp post --url <target url> --data <your data>",
 	Run:     postRequest,
 }
+
+func init() {
+	postCmd.Flags().StringVar(postData, "data", "", "sets data to send")
+	postCmd.MarkFlagRequired("data")
+}
