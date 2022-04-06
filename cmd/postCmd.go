@@ -3,8 +3,10 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -15,10 +17,32 @@ var postData *string = new(string)
 func postRequest(cmd *cobra.Command, args []string) {
 
 	//set data to send
-	var data map[string]string = map[string]string{
-		"data": *postData,
+	var keyValues []string = strings.Split(*postData, ",")
+	var keys []string = []string{}
+	var values []string = []string{}
+	var data map[string]string = make(map[string]string)
+	if len(*postData)%2 != 0 {
+		log.Error().Msg("all keys need a value")
 	}
+	//separate keys and values
+	for index, member := range keyValues {
+		if index == 0 {
+			keys = append(keys, member)
+		} else {
+			if index%2 == 0 {
+				keys = append(keys, member)
+			} else {
+				values = append(values, member)
+			}
+		}
+	}
+	//each key
+	for i := 0; i < len(keys); i++ {
+		data[keys[i]] = values[i]
+	}
+	fmt.Println(data)
 	jsonData, _ := json.Marshal(data)
+	fmt.Println(string(jsonData))
 	var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
 
 	//set request
@@ -52,6 +76,6 @@ var postCmd *cobra.Command = &cobra.Command{
 }
 
 func init() {
-	postCmd.Flags().StringVar(postData, "data", "", "sets data to send")
+	postCmd.Flags().StringVar(postData, "data", "", "will set keys and values for body length, its length must be a divisible by 2")
 	postCmd.MarkFlagRequired("data")
 }
