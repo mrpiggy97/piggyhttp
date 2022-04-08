@@ -21,49 +21,50 @@ func postRequest(cmd *cobra.Command, args []string) {
 	var keys []string = []string{}
 	var values []string = []string{}
 	var data map[string]string = make(map[string]string)
-	if len(*postData)%2 != 0 {
+	if len(keyValues)%2 != 0 {
 		log.Error().Msg("all keys need a value")
-	}
-	//separate keys and values
-	for index, member := range keyValues {
-		if index == 0 {
-			keys = append(keys, member)
-		} else {
-			if index%2 == 0 {
+	} else {
+		//separate keys and values
+		for index, member := range keyValues {
+			if index == 0 {
 				keys = append(keys, member)
 			} else {
-				values = append(values, member)
+				if index%2 == 0 {
+					keys = append(keys, member)
+				} else {
+					values = append(values, member)
+				}
 			}
 		}
-	}
-	//each key
-	for i := 0; i < len(keys); i++ {
-		data[keys[i]] = values[i]
-	}
-	fmt.Println(data)
-	jsonData, _ := json.Marshal(data)
-	fmt.Println(string(jsonData))
-	var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
+		//each key
+		for i := 0; i < len(keys); i++ {
+			data[keys[i]] = values[i]
+		}
+		fmt.Println(data)
+		jsonData, _ := json.Marshal(data)
+		fmt.Println(string(jsonData))
+		var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
 
-	//set request
-	request, requestError := http.NewRequest("POST", *url, buffer)
-	request.Header.Add("Content-type", "application/json")
-	var client *http.Client = &http.Client{}
-	if requestError != nil {
-		log.Error().Msg(requestError.Error())
-		panic(requestError.Error())
-	}
-	if len(*authorizationToken) > 0 {
-		request.Header.Add("Authorization", *authorizationToken)
-	}
+		//set request
+		request, requestError := http.NewRequest("POST", *url, buffer)
+		request.Header.Add("Content-type", "application/json")
+		var client *http.Client = &http.Client{}
+		if requestError != nil {
+			log.Error().Msg(requestError.Error())
+			panic(requestError.Error())
+		}
+		if len(*authorizationToken) > 0 {
+			request.Header.Add("Authorization", *authorizationToken)
+		}
 
-	//make request
-	response, responseError := client.Do(request)
-	if responseError != nil {
-		log.Error().Msg(responseError.Error())
-	} else {
-		decodedResponse, _ := io.ReadAll(response.Body)
-		log.Info().Msg(string(decodedResponse))
+		//make request
+		response, responseError := client.Do(request)
+		if responseError != nil {
+			log.Error().Msg(responseError.Error())
+		} else {
+			decodedResponse, _ := io.ReadAll(response.Body)
+			log.Info().Msg(string(decodedResponse))
+		}
 	}
 }
 
