@@ -59,7 +59,9 @@ func postRequest(cmd *cobra.Command, args []string) {
 
 		//make request
 		response, responseError := client.Do(request)
-		if responseError != nil {
+		if response.StatusCode != http.StatusAccepted {
+			log.Error().Msg(response.Status)
+		} else if responseError != nil {
 			log.Error().Msg(responseError.Error())
 		} else {
 			decodedResponse, _ := io.ReadAll(response.Body)
