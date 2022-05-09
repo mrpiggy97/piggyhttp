@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -21,50 +22,56 @@ func putRequest(cmd *cobra.Command, args []string) {
 	if len(keysAndValues)%2 != 0 {
 		var err error = errors.New("each key of data must have a value")
 		log.Error().Msg(err.Error())
-		panic(err.Error())
-	}
-	var keys []string = []string{}
-	var values []string = []string{}
+	} else {
+		var keys []string = []string{}
+		var values []string = []string{}
 
-	for index, member := range keysAndValues {
-		if index == 0 {
-			keys = append(keys, member)
-		} else {
-			if index%2 == 0 {
+		for index, member := range keysAndValues {
+			if index == 0 {
 				keys = append(keys, member)
 			} else {
-				values = append(values, member)
+				if index%2 == 0 {
+					keys = append(keys, member)
+				} else {
+					values = append(values, member)
+				}
 			}
 		}
-	}
 
-	for i := 0; i < len(keys); i++ {
-		data[keys[i]] = values[i]
-	}
+		for i := 0; i < len(keys); i++ {
+			data[keys[i]] = values[i]
+		}
 
-	jsonData, _ := json.Marshal(data)
-	var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
+		jsonData, _ := json.Marshal(data)
+		var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
 
-	//set request
-	request, requestError := http.NewRequest("PUT", *url, buffer)
-	var client *http.Client = &http.Client{}
-	if requestError != nil {
-		log.Err(requestError).Msg(requestError.Error())
-		panic(requestError.Error())
-	}
-	if len(*authorizationToken) > 0 {
-		request.Header.Add("Authorization", *authorizationToken)
-	}
+		//set request
+		request, requestError := http.NewRequest("PUT", *url, buffer)
+		var client *http.Client = &http.Client{}
+		if requestError != nil {
+			log.Err(requestError).Msg(requestError.Error())
+			panic(requestError.Error())
+		}
+		if len(*authorizationToken) > 0 {
+			request.Header.Add("Authorization", *authorizationToken)
+		}
 
-	//make request
-	response, responseError := client.Do(request)
-	if responseError != nil {
-		log.Error().Msg(responseError.Error())
-	} else {
-		decodedResponse, _ := io.ReadAll(response.Body)
-		log.Info().Msg(string(decodedResponse))
+		//make request
+		response, responseError := client.Do(request)
+		if responseError != nil {
+			log.Error().Msg(responseError.Error())
+		} else {
+			decodedResponse, _ := io.ReadAll(response.Body)
+			message := fmt.Sprintf(
+				"%d,%s,%s",
+				response.StatusCode,
+				response.Status,
+				string(decodedResponse),
+			)
+			log.Info().Msg(message)
+		}
+		defer response.Body.Close()
 	}
-	defer response.Body.Close()
 }
 
 var putCmd *cobra.Command = &cobra.Command{

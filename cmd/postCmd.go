@@ -3,6 +3,7 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -60,7 +61,13 @@ func postRequest(cmd *cobra.Command, args []string) {
 			log.Error().Msg(responseError.Error())
 		} else {
 			decodedResponse, _ := io.ReadAll(response.Body)
-			log.Info().Msg(string(decodedResponse))
+			message := fmt.Sprintf(
+				"%d,%s,%s",
+				response.StatusCode,
+				response.Status,
+				string(decodedResponse),
+			)
+			log.Info().Msg(message)
 		}
 
 		defer response.Body.Close()

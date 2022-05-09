@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"fmt"
 	"io"
 	"net/http"
 
@@ -27,7 +28,13 @@ func getRequest(cmd *cobra.Command, args []string) {
 		log.Error().Msg(responseErr.Error())
 	} else {
 		decodedResponse, _ := io.ReadAll(response.Body)
-		log.Info().Msg(string(decodedResponse))
+		message := fmt.Sprintf(
+			"%d,%s,%s",
+			response.StatusCode,
+			response.Status,
+			string(decodedResponse),
+		)
+		log.Info().Msg(message)
 	}
 	defer response.Body.Close()
 }
