@@ -3,8 +3,10 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
@@ -14,8 +16,30 @@ var putData *string = new(string)
 
 func putRequest(cmd *cobra.Command, args []string) {
 	//set data to send
-	var data map[string]string = map[string]string{
-		"data": *putData,
+	var keysAndValues []string = strings.Split(*putData, ",")
+	var data map[string]string = make(map[string]string)
+	if len(keysAndValues)%2 != 0 {
+		var err error = errors.New("each key of data must have a value")
+		log.Error().Msg(err.Error())
+		panic(err.Error())
+	}
+	var keys []string = []string{}
+	var values []string = []string{}
+
+	for index, member := range keysAndValues {
+		if index == 0 {
+			keys = append(keys, member)
+		} else {
+			if index%2 == 0 {
+				keys = append(keys, member)
+			} else {
+				values = append(values, member)
+			}
+		}
+	}
+
+	for i := 0; i < len(keys); i++ {
+		data[keys[i]] = values[i]
 	}
 
 	jsonData, _ := json.Marshal(data)

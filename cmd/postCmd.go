@@ -3,7 +3,6 @@ package cmd
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"io"
 	"net/http"
 	"strings"
@@ -40,9 +39,7 @@ func postRequest(cmd *cobra.Command, args []string) {
 		for i := 0; i < len(keys); i++ {
 			data[keys[i]] = values[i]
 		}
-		fmt.Println(data)
 		jsonData, _ := json.Marshal(data)
-		fmt.Println(string(jsonData))
 		var buffer *bytes.Buffer = bytes.NewBuffer(jsonData)
 
 		//set request
@@ -59,14 +56,14 @@ func postRequest(cmd *cobra.Command, args []string) {
 
 		//make request
 		response, responseError := client.Do(request)
-		if response.StatusCode != http.StatusAccepted {
-			log.Error().Msg(response.Status)
-		} else if responseError != nil {
+		if responseError != nil {
 			log.Error().Msg(responseError.Error())
 		} else {
 			decodedResponse, _ := io.ReadAll(response.Body)
 			log.Info().Msg(string(decodedResponse))
 		}
+
+		defer response.Body.Close()
 	}
 }
 

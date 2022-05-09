@@ -29,6 +29,7 @@ func deleteRequest(cmd *cobra.Command, args []string) {
 		decodedResponse, _ := io.ReadAll(response.Body)
 		log.Info().Msg(string(decodedResponse))
 	}
+	defer response.Body.Close()
 }
 
 var deleteCmd *cobra.Command = &cobra.Command{
