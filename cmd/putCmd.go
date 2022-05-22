@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"strings"
 
+	"github.com/mrpiggy97/piggyhttp/repository"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
@@ -70,6 +71,7 @@ func putRequest(cmd *cobra.Command, args []string) {
 			)
 			log.Info().Msg(message)
 		}
+		defer repository.AppWaiter.Done()
 		defer response.Body.Close()
 	}
 }

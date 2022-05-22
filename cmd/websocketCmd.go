@@ -5,11 +5,13 @@ import (
 	"os"
 
 	"github.com/gorilla/websocket"
+	"github.com/mrpiggy97/piggyhttp/repository"
 	"github.com/rs/zerolog/log"
 	"github.com/spf13/cobra"
 )
 
 func recieveHandler(connection *websocket.Conn) {
+	defer repository.AppWaiter.Done()
 	defer connection.Close()
 	for {
 		_, msg, err := connection.ReadMessage()
