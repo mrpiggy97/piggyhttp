@@ -16,7 +16,7 @@ import (
 var postData *string = new(string)
 
 func postRequest(cmd *cobra.Command, args []string) {
-
+	repository.AppWaiter.Add(1)
 	//set data to send
 	var keyValues []string = strings.Split(*postData, ",")
 	var keys []string = []string{}

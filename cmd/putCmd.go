@@ -17,6 +17,7 @@ import (
 var putData *string = new(string)
 
 func putRequest(cmd *cobra.Command, args []string) {
+	repository.AppWaiter.Add(1)
 	//set data to send
 	var keysAndValues []string = strings.Split(*putData, ",")
 	var data map[string]string = make(map[string]string)

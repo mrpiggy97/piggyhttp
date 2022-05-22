@@ -11,7 +11,7 @@ import (
 )
 
 func deleteRequest(cmd *cobra.Command, args []string) {
-
+	repository.AppWaiter.Add(1)
 	//set request
 	var client *http.Client = &http.Client{}
 	request, requestError := http.NewRequest("DELETE", *url, nil)

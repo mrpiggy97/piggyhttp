@@ -11,7 +11,7 @@ import (
 )
 
 func getRequest(cmd *cobra.Command, args []string) {
-
+	repository.AppWaiter.Add(1)
 	//set request
 	request, requestError := http.NewRequest("GET", *url, nil)
 	var client *http.Client = &http.Client{}

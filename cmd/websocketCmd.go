@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"fmt"
-	"os"
 
 	"github.com/gorilla/websocket"
 	"github.com/mrpiggy97/piggyhttp/repository"
@@ -11,20 +10,22 @@ import (
 )
 
 func recieveHandler(connection *websocket.Conn) {
-	defer repository.AppWaiter.Done()
 	defer connection.Close()
+	defer repository.AppWaiter.Done()
+	log.Info().Msg("waiting for socket messages")
 	for {
 		_, msg, err := connection.ReadMessage()
 		if err != nil {
 			var message string = fmt.Sprintf("Error in receiver:%s", err)
 			log.Error().Msg(message)
-			os.Exit(1)
+			break
 		}
-		log.Printf("Received: %s\n", msg)
+		log.Info().Msg(string(msg))
 	}
 }
 
 func connectToWebSocket(cmd *cobra.Command, args []string) {
+	repository.AppWaiter.Add(1)
 	socketConn, _, socketErr := websocket.DefaultDialer.Dial(*url, nil)
 	if socketErr != nil {
 		log.Error().Msg(socketErr.Error())
@@ -39,6 +40,6 @@ var webSocketCmd *cobra.Command = &cobra.Command{
 	Use:     "websocket",
 	Example: "piggyhttp websocket --url <url here>",
 	Short:   "sets a connection with a websocket",
-	Long:    "sets a connection with a websocket and that's it",
+	Long:    "sets a connection with a websocket and listenes for message from that connection",
 	Run:     connectToWebSocket,
 }
