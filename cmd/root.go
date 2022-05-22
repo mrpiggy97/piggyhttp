@@ -7,7 +7,7 @@ var authorizationToken *string = new(string)
 
 var RootCmd *cobra.Command = &cobra.Command{
 	Use:     "piggyhttp",
-	Version: "v1.0.3",
+	Version: "v1.0.4",
 	Short:   "makes http requests and can make websocket connections",
 	Long:    "will make an http request based on url given and print the result, you can also make a websocket request",
 }
