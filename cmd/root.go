@@ -7,13 +7,13 @@ var authorizationToken *string = new(string)
 
 var RootCmd *cobra.Command = &cobra.Command{
 	Use:     "piggyhttp",
-	Version: "v1.0.2",
-	Short:   "makes http requests",
-	Long:    "will make an http request based on url given and print the result",
+	Version: "v1.0.3",
+	Short:   "makes http requests and can make websocket connections",
+	Long:    "will make an http request based on url given and print the result, you can also make a websocket request",
 }
 
 func init() {
 	RootCmd.AddCommand(getCmd, postCmd, putCmd, deleteCmd, webSocketCmd)
 	RootCmd.PersistentFlags().StringVar(url, "url", "default", "will set target url")
-	RootCmd.PersistentFlags().StringVar(authorizationToken, "withAuthorizationToken", "", "sets token for authorization header")
+	RootCmd.PersistentFlags().StringVar(authorizationToken, "authorization", "", "sets jwt token for authorization header")
 }
