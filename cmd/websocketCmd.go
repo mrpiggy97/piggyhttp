@@ -25,6 +25,7 @@ func recieveHandler(connection *websocket.Conn) {
 }
 
 func connectToWebSocket(cmd *cobra.Command, args []string) {
+	defer repository.AppWaiter.Done()
 	repository.AppWaiter.Add(1)
 	socketConn, _, socketErr := websocket.DefaultDialer.Dial(*url, nil)
 	if socketErr != nil {
